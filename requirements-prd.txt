@@ -1,0 +1,16 @@
+loguru
+peewee
+pydantic
+PyMySQL
+python-dotenv
+python-multipart
+pytz
+PyYAML
+requests
+uvicorn
+fastapi
+pymilvus==2.2.8
+dnspython==2.2.1
+minio
+filetype
+iv2 @ file:///Users/ponponon/Desktop/code/me/iv2/dist/iv2-0.0.1-py3-none-any.whl
