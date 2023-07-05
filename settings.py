@@ -7,7 +7,7 @@ from core.minio.schemas import MinioConfig
 from loguru import logger
 
 
-run_mode = os.environ['RUN_MODE'].lower() or 'local'
+run_mode = os.environ.get('RUN_MODE', 'local').lower()
 
 logger.debug(f'当前的运行模式: {run_mode}')
 
