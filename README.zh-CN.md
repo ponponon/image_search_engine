@@ -12,7 +12,7 @@
 
 ## 运行程序前的准备工作
 
-### 安装依赖
+### 项目依赖介绍
 
 #### 存储图片的元信息——Mysql
 
@@ -55,11 +55,43 @@
 - 然后将样本特征和一堆母本特征挨个比较，比较结果是一个「距离」，也是一个浮点数，数值越小表示相似度越高
 - 然后给用户距离最小的 n 个图片
 
+> 特征提取，我们使用 iv2 这个库：https://github.com/ponponon/iv2
+> 我们会使用 `pip install iv2` 安装这个库
+
 根据上面的描述，我们知道，有一个步骤是「将提取的特征存储起来」，存储这些特征，我们就用 milvus
 
 milvus 是一个分布式的向量数据库，专门存储向量的
 
 关于 milvus 的更多内容，可以参考：https://milvus.io/
+
+### 安装运行依赖
+
+如果你不熟悉这些中间件，或者不想把时间浪费在部署这些中间件上，我们也为你准备了 docker-compose 脚本一键运行
+
+> 中间件指的就是 Mysql、minio、milvus
+
+运行 mysql
+
+```shell
+cd deploy/docker/mysql
+docker-compose up -d
+```
+
+运行 minio
+
+```shell
+cd deploy/docker/minio
+docker-compose up -d
+```
+
+运行 milvus
+
+```shell
+cd deploy/docker/milvus
+docker-compose up -d
+```
+
+> 注意：如果你细心，你会发现 milvus 的 docker-compose.yaml 文件中，也存在一个 minio。这个时候你心中是不是就有疑问？为什么我们还要额外运行一个 minio？一共就有两个 minio 了？是的！我们需要两个 minio ，milvus 的 minio 是 milvus 运行所需要的，用于持久化向量数据等用途。而我们单独部署的 minio 是用于存储图片的
 
 ## 运行程序本体
 
@@ -76,3 +108,16 @@ python api.py
 - 母本入库
 - 查看母本
 - 样本查询
+
+如果运行成功，你会看到类似下面的输出：
+
+```shell
+╰─➤  python api.py                                                                                                130 ↵
+2023-07-05 23:02:23.707 | DEBUG    | settings:<module>:12 - 当前的运行模式: local
+INFO:     Started server process [75085]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:6200 (Press CTRL+C to quit)
+```
+
+此时你可以在浏览器输入 http://127.0.0.1:6200/docs 查看接口文档

@@ -6,8 +6,6 @@ import json
 from loggers import logger
 
 
-logger.debug(settings.MINIO_CONFIG.json(indent=4))
-
 client = Minio(
     settings.MINIO_CONFIG.end_point,
     access_key=settings.MINIO_CONFIG.access_key,

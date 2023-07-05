@@ -12,14 +12,14 @@ An open source image search engine that allows you to easily build your own imag
 
 ## Preparation before running the program
 
-### Installing dependencies
+### Introduction to project dependencies
 
 #### Storing meta-information about images - Mysql
 
-Images are stored to the system and we want to be able to have some meta-information, such as
+Images are stored into the system and we want to be able to have some meta-information, such as
 
 - The file name of the image
-- The path where the image is stored (the image is stored in minio, so where it is stored in minio is something we need to remember)
+- The storage path of the image (the image is stored in minio, so where it is stored in minio is something we need to remember)
 - the hashcode of the image, which is used to uniquely mark an image for operations such as de-duplication
 
 So, we need a database to store this meta information, and we use the most popular one, Mysql
@@ -53,13 +53,45 @@ The principle behind the implementation of image search:
 - When the user needs to search, he submits an image (called a sample) and wants to get a master image that is similar to the sample image
 - Extract the features from the sample image as well
 - The sample features are then compared one by one with a bunch of parent features, the result of the comparison is a "distance", also a float, where a smaller value means a higher similarity
-- Then the user is given the n images with the lowest distance
+- Then give the user the n images with the lowest distance
 
-From the above description, we know that there is a step to 'store the extracted features' and to store these features, we use milvus
+> For feature extraction, we use the iv2 library: https://github.com/ponponon/iv2
+> We will install this library using `pip install iv2`
+
+From the above description, we know that there is a step to "store the extracted features" and to store these features, we use milvus
 
 milvus is a distributed vector database, dedicated to storing vectors
 
 For more on milvus, see: https://milvus.io/
+
+### Installing and running dependencies
+
+If you are not familiar with the middleware, or don't want to waste time deploying it, we also have a docker-compose script for you to run with one click
+
+> Middleware refers to Mysql, minio, milvus
+
+Run mysql
+
+```shell
+cd deploy/docker/mysql
+docker-compose up -d
+```
+
+Run minio
+
+```shell
+cd deploy/docker/minio
+docker-compose up -d
+```
+
+Run milvus
+
+```shell
+cd deploy/docker/milvus
+docker-compose up -d
+```
+
+> Note: If you're careful, you'll notice that there is a minio in the milvus docker-compose.yaml file. Why do we need to run an extra minio when we have two minio's? Yes! We need two minio's, the milvus minio is needed for milvus to run, for example to persist vector data. And the minio we deploy separately is for storing images
 
 ## Running the program proper
 
@@ -75,4 +107,17 @@ This api service is responsible for the following functions:
 
 - parent entry
 - viewing the masters
-- sample query
+- Sample query
+
+If it runs successfully, you will see output similar to the following:
+
+```shell
+╰─➤ python api.py 130 ↵
+2023-07-05 23:02:23.707 | DEBUG | settings:<module>:12 - Current run mode: local
+INFO: Started server process [75085]
+INFO: Waiting for application startup.
+INFO: Application startup complete.
+INFO: Uvicorn running on http://0.0.0.0:6200 (Press CTRL+C to quit)
+```
+
+At this point you can view the interface documentation by typing http://127.0.0.1:6200/docs into your browser
