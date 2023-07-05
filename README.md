@@ -112,7 +112,7 @@ This api service is responsible for the following functions:
 If it runs successfully, you will see output similar to the following:
 
 ```shell
-╰─➤ python api.py 130 ↵
+╰─➤ python api.py
 2023-07-05 23:02:23.707 | DEBUG | settings:<module>:12 - Current run mode: local
 INFO: Started server process [75085]
 INFO: Waiting for application startup.

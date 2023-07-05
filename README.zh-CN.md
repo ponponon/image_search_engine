@@ -112,7 +112,7 @@ python api.py
 如果运行成功，你会看到类似下面的输出：
 
 ```shell
-╰─➤  python api.py                                                                                                130 ↵
+╰─➤  python api.py
 2023-07-05 23:02:23.707 | DEBUG    | settings:<module>:12 - 当前的运行模式: local
 INFO:     Started server process [75085]
 INFO:     Waiting for application startup.
