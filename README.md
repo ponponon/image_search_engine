@@ -121,3 +121,8 @@ INFO: Uvicorn running on http://0.0.0.0:6200 (Press CTRL+C to quit)
 ```
 
 At this point you can view the interface documentation by typing http://127.0.0.1:6200/docs into your browser
+
+## Related Projects
+
+- Companion front-end page: https://github.com/ponponon/image_search_web
+- Companion feature extraction library: https://github.com/ponponon/iv2

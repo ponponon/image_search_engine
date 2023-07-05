@@ -121,3 +121,8 @@ INFO:     Uvicorn running on http://0.0.0.0:6200 (Press CTRL+C to quit)
 ```
 
 此时你可以在浏览器输入 http://127.0.0.1:6200/docs 查看接口文档
+
+## 相关项目
+
+- 配套的前端页面：https://github.com/ponponon/image_search_web
+- 配套的特征提取库：https://github.com/ponponon/iv2
