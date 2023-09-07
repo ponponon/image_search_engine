@@ -13,13 +13,14 @@ from core.mysql.models import ImageMetaTable
 from playhouse.shortcuts import model_to_dict
 import settings
 import threading
+from apps.schemas import CreateMetaResponse, ListMetaResponse
 
 meta = APIRouter(tags=["母本接口"], prefix='/meta/image')
 
 
-@meta.post('/file')
+@meta.post('/file', response_model=CreateMetaResponse)
 def create_meta_by_file(
-    file: UploadFile = File(..., description='图片文件'),
+    file: UploadFile = File(..., description='图片文件')
 ):
     stream: bytes = file.file.read()
     extension = get_file_extension(stream)
@@ -41,21 +42,23 @@ def create_meta_by_file(
 
     insert_row(hash_code, milvus_id, file_name, file_path)
 
-    return {
+    return CreateMetaResponse(**{
         'hash_code': hash_code,
         'milvus_id': milvus_id,
         'file_name': file_name,
         'file_path': file_path
-    }
+    })
 
 
-@meta.get('')
+@meta.get('', response_model=list[ListMetaResponse])
 def list_meta():
 
     images: list[ImageMetaTable] = list(ImageMetaTable.select())
 
     return [
-        model_to_dict(image) | {
-            'file_url': f'{settings.minio_public_base_url}/{image.file_path}'}
+        ListMetaResponse(**(
+            model_to_dict(image) | {
+                'file_url': f'{settings.minio_public_base_url}/{image.file_path}'}
+        ))
         for image in images
     ]
