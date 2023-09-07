@@ -17,4 +17,4 @@ class ImageMeta(BaseModel):
     file_name: str | None
     file_path: str | None
     created_at: datetime | None
-    created_at: datetime | None
+    updated_at: datetime | None

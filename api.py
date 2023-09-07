@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mount import Swagger
 from apps.dev import dev
 from apps.search import search
+from apps.sample import sample
 from apps.meta import meta
 
 
@@ -28,7 +29,7 @@ async def root():
 
 app.include_router(dev)
 app.include_router(meta)
-app.include_router(search)
+app.include_router(sample)
 
 
 if __name__ == "__main__":
