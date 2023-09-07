@@ -12,6 +12,7 @@ def create_vector(file: BytesIO | bytes) -> list[float]:
     if isinstance(file, bytes):
         file = BytesIO(file)
     image = Image.open(file)
+    image = image.convert('RGB')
     vector = resnet.gen_vector(image)
     return vector
 

@@ -30,7 +30,7 @@ def create_meta_by_file(
 
     logger.debug(file_name)
 
-    assert extension, f'无效的文件格式'
+    assert extension, f'无效的文件格式, {file.filename}'
 
     # 上传到 minio
     file_path = f'meta/image/{hash_code}.{extension}'
