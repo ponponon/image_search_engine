@@ -7,7 +7,7 @@ from utils.time_helpers import get_utc_now_timestamp
 import json
 
 
-class SampleSearchResponse(BaseModel):
+class SearchSampleResult(BaseModel):
     id: int = Field(..., description='mysql 表中的主键自增 id')
     distance: float = Field(
         ..., description='l2 欧式距离（不开根号的），用于衡量两个向量的相似度，越接近 0 越相似，在本次算法中，一般距离在 0.25 之类，都是比较可靠的')
@@ -21,6 +21,12 @@ class SampleSearchResponse(BaseModel):
     updated_at: datetime = Field(..., description='图片最后更新时间')
     file_url: str = Field(...,
                           description='存储在 oss/minio 中的路径，添加 http/https 前缀，允许直接公网访问')
+
+
+class SearchSampleResponse(BaseModel):
+    succeed: bool = Field(..., description='操作是否成功')
+    message: str = Field(..., description='描述')
+    data: list[SearchSampleResult] = Field([])
 
 
 class CreateMetaResult(BaseModel):

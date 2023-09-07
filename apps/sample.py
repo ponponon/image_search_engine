@@ -6,7 +6,7 @@ from loggers import logger
 import settings
 from fastapi import FastAPI, File, UploadFile, Form
 from vectors import create_vector
-from apps.schemas import SampleSearchResponse
+from apps.schemas import SearchSampleResponse, SearchSampleResult
 from utils.time_helpers import timer
 
 
@@ -26,17 +26,39 @@ def metadata(hash_code: str) -> dict:
     return data
 
 
-@sample.post('/file', response_model=list[SampleSearchResponse])
+@sample.post('/file', response_model=SearchSampleResponse, summary='图片查询', responses={
+    200: {
+        'model': SearchSampleResponse
+    },
+    500: {
+        'model': SearchSampleResponse
+    },
+})
 def search_by_file(
-    file: UploadFile = File(..., description='DNA文件'),
+    file: UploadFile = File(..., description='图片文件'),
+
 ):
     with timer('样本查询耗时'):
-        stream: bytes = file.file.read()
-        vector = create_vector(stream)
+        try:
+            stream: bytes = file.file.read()
+            vector = create_vector(stream)
 
-        from core.milvus.crud import search_vector
-        from core.milvus.schemas import SearchResult
+            from core.milvus.crud import search_vector
+            from core.milvus.schemas import SearchResult
 
-        search_results = search_vector(vector)
+            search_results = search_vector(vector)
 
-        return [SampleSearchResponse(**(s.dict() | metadata(s.hash_code))) for s in search_results]
+            data = [SearchSampleResult(
+                **(s.dict() | metadata(s.hash_code))) for s in search_results]
+
+            return SearchSampleResponse(
+                succeed=True,
+                message=f'获取 {len(data)} 个母本',
+                data=data
+            )
+        except Exception as error:
+            logger.exception(error)
+            return JSONResponse(SearchSampleResponse(
+                succeed=False,
+                message=f'{str(error)}'
+            ).dict(), status_code=500)

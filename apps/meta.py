@@ -20,7 +20,7 @@ from utils.time_helpers import timer
 meta = APIRouter(tags=["母本接口"], prefix='/meta/image')
 
 
-@meta.post('/file', response_model=CreateMetaResponse, summary='母本入库')
+@meta.post('/file', response_model=CreateMetaResponse, summary='图片母本入库')
 def create_meta_by_file(
     file: UploadFile = File(..., description='图片文件')
 ):
@@ -108,7 +108,7 @@ def list_meta(
 
 
 @meta.delete(
-    'metas',
+    '/images',
     response_model=DeleteMetasResponse,
     summary='删除所有母本',
     responses={
