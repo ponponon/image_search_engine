@@ -55,7 +55,15 @@ def load_collection():
 
 def delete_collection():
     from pymilvus import utility
-    utility.drop_collection(settings.MILVUS_CONFIG.collection.name)
+    from core.milvus.models import connections
+
+    connections.connect(
+        host=settings.MILVUS_CONFIG.host,
+        port=settings.MILVUS_CONFIG.port,
+    )
+    collections: list[str] = utility.list_collections()
+    if settings.MILVUS_CONFIG.collection.name in collections:
+        utility.drop_collection(settings.MILVUS_CONFIG.collection.name)
 
 
 create_model_and_index()

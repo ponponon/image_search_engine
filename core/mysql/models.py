@@ -24,7 +24,7 @@ class ImageMetaTable(Model):
     hash_code = CharField(unique=True)
     milvus_id = IntegerField()
     file_name = CharField()
-    file_path = CharField()
+    file_path = CharField(help_text='存储在 minio/oss 中的路径')
 
     created_at = DateTimeField(
         null=False,
