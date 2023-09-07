@@ -14,51 +14,54 @@ from playhouse.shortcuts import model_to_dict
 from utils.md5_helper import get_stream_md5
 import settings
 from loggers import logger
+from utils.time_helpers import timer
+
 
 meta = APIRouter(tags=["母本接口"], prefix='/meta/image')
 
 
-@meta.post('/file', response_model=CreateMetaResponse)
+@meta.post('/file', response_model=CreateMetaResponse, summary='母本入库')
 def create_meta_by_file(
     file: UploadFile = File(..., description='图片文件')
 ):
-    try:
-        stream: bytes = file.file.read()
-        extension = get_file_extension(stream)
-        hash_code = get_stream_md5(stream)
-        logger.debug(file.filename)
+    with timer('母本入库耗时'):
+        try:
+            stream: bytes = file.file.read()
+            extension = get_file_extension(stream)
+            hash_code = get_stream_md5(stream)
+            logger.debug(file.filename)
 
-        file_name = file.filename or hash_code
+            file_name = file.filename or hash_code
 
-        logger.debug(file_name)
+            logger.debug(file_name)
 
-        assert extension, f'无效的文件格式, {file.filename}'
+            assert extension, f'无效的文件格式, {file.filename}'
 
-        # 上传到 minio
-        file_path = f'meta/image/{hash_code}.{extension}'
-        upload(stream, file_path)
+            # 上传到 minio
+            file_path = f'meta/image/{hash_code}.{extension}'
+            upload(stream, file_path)
 
-        vector = create_vector(stream)
-        milvus_id = insert_vector(vector, hash_code)
+            vector = create_vector(stream)
+            milvus_id = insert_vector(vector, hash_code)
+            logger.debug(f'milvus_id: {milvus_id}')
+            insert_row(hash_code, milvus_id, file_name, file_path)
 
-        insert_row(hash_code, milvus_id, file_name, file_path)
-
-        return CreateMetaResponse(
-            succeed=True,
-            message=f'母本入库成功',
-            data=CreateMetaResult(**{
-                'hash_code': hash_code,
-                'milvus_id': milvus_id,
-                'file_name': file_name,
-                'file_path': file_path
-            })
-        )
-    except Exception as error:
-        logger.exception(error)
-        return JSONResponse(CreateMetaResponse(
-            succeed=False,
-            message=f'{str(error)}'
-        ).dict(), status_code=500)
+            return CreateMetaResponse(
+                succeed=True,
+                message=f'母本入库成功',
+                data=CreateMetaResult(**{
+                    'hash_code': hash_code,
+                    'milvus_id': milvus_id,
+                    'file_name': file_name,
+                    'file_path': file_path
+                })
+            )
+        except Exception as error:
+            logger.exception(error)
+            return JSONResponse(CreateMetaResponse(
+                succeed=False,
+                message=f'{str(error)}'
+            ).dict(), status_code=500)
 
 
 @meta.get(

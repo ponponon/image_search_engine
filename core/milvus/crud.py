@@ -15,7 +15,7 @@ def insert_vector(vector: list[float], hash_code: str) -> int:
     """
     rows: list[dict] = collection.query(expr=f'hash_code == "{hash_code}"')
     if rows:
-        return 0
+        return rows[0].get('id', 0)
     data = [
         [hash_code],
         [vector]
