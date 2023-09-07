@@ -6,9 +6,10 @@ from apps.dev import dev
 from apps.sample import sample
 from apps.meta import meta
 
+version = "2023.09.07.1"
 
-app = FastAPI(title='以图搜图对接 milvus 接口', debug=False,
-              docs_url=None, redoc_url=None)
+app = FastAPI(title='「以图搜图」接口', debug=False,
+              docs_url=None, redoc_url=None, version=version)
 
 app.add_middleware(
     CORSMiddleware,
