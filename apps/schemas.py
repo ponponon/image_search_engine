@@ -23,7 +23,21 @@ class SampleSearchResponse(BaseModel):
                           description='存储在 oss/minio 中的路径，添加 http/https 前缀，允许直接公网访问')
 
 
-class ListMetaResponse(BaseModel):
+class CreateMetaResult(BaseModel):
+    hash_code: str = Field(..., description='母本图片的 hashcode')
+    milvus_id: int = Field(...,
+                           description='存储在 milvus 中的 id （是 milvus 的自增 id）')
+    file_name: str = Field(..., description='(1.0-distance)/1.0*100')
+    file_path: str = Field(..., description='存储在 oss/minio 中的路径')
+
+
+class CreateMetaResponse(BaseModel):
+    succeed: bool = Field(..., description='操作是否成功')
+    message: str = Field(..., description='描述')
+    data: CreateMetaResult | None
+
+
+class ListMetaResult(BaseModel):
     id: int = Field(..., description='mysql 表中的主键自增 id')
     hash_code: str = Field(..., description='母本图片的 hashcode')
     milvus_id: int = Field(...,
@@ -36,9 +50,12 @@ class ListMetaResponse(BaseModel):
                           description='存储在 oss/minio 中的路径，添加 http/https 前缀，允许直接公网访问')
 
 
-class CreateMetaResponse(BaseModel):
-    hash_code: str = Field(..., description='母本图片的 hashcode')
-    milvus_id: int = Field(...,
-                           description='存储在 milvus 中的 id （是 milvus 的自增 id）')
-    file_name: str = Field(..., description='(1.0-distance)/1.0*100')
-    file_path: str = Field(..., description='存储在 oss/minio 中的路径')
+class ListMetaResponse(BaseModel):
+    succeed: bool = Field(..., description='操作是否成功')
+    message: str = Field(..., description='描述')
+    data: list[ListMetaResult] = Field([])
+
+
+class DeleteMetasResponse(BaseModel):
+    succeed: bool = Field(..., description='操作是否成功')
+    message: str = Field(..., description='描述')

@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from mount import Swagger
 from apps.dev import dev
-from apps.search import search
 from apps.sample import sample
 from apps.meta import meta
 
