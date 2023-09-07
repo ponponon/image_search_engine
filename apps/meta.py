@@ -1,19 +1,18 @@
-import json
 from fastapi import APIRouter
-from loggers import logger
+from fastapi import Query
 from fastapi import FastAPI, File, UploadFile, Form
-from core.fs.utils import get_file_extension
 from vectors import create_vector
-from utils.md5_helper import get_stream_md5
+from apps.schemas import CreateMetaResponse, ListMetaResponse
 from core.milvus.crud import insert_vector
+from core.fs.utils import get_file_extension
 from core.fs.utils import get_file_extension
 from core.minio.crud import upload
 from core.mysql.crud import insert_row
 from core.mysql.models import ImageMetaTable
 from playhouse.shortcuts import model_to_dict
+from utils.md5_helper import get_stream_md5
 import settings
-import threading
-from apps.schemas import CreateMetaResponse, ListMetaResponse
+from loggers import logger
 
 meta = APIRouter(tags=["母本接口"], prefix='/meta/image')
 
@@ -50,10 +49,14 @@ def create_meta_by_file(
     })
 
 
-@meta.get('', response_model=list[ListMetaResponse])
-def list_meta():
-
-    images: list[ImageMetaTable] = list(ImageMetaTable.select())
+@meta.get('', response_model=list[ListMetaResponse], summary='列出母本')
+def list_meta(
+    offset: int = Query(0),
+    limit: int = Query(20),
+):
+    images: list[ImageMetaTable] = list(
+        ImageMetaTable.select().offset(offset).limit(limit)
+    )
 
     return [
         ListMetaResponse(**(
