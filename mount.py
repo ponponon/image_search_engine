@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
@@ -8,15 +9,17 @@ from fastapi.openapi.docs import (
 from mark import BASE_DIR
 
 
+app = FastAPI(docs_url=None, redoc_url=None)
+
+
 class Swagger:
     @classmethod
-    def doc(cls, app: FastAPI) -> None:
+    def doc(self, app: FastAPI) -> None:
         app.mount(
             '/static',
-            StaticFiles(directory=BASE_DIR / 'static'/'swagger-ui'),
+            StaticFiles(directory=BASE_DIR / 'static'/'swagger-ui-oas3.1'),
             name='static'
         )
-
         @app.get("/docs", include_in_schema=False)
         async def custom_swagger_ui_html():
             return get_swagger_ui_html(
