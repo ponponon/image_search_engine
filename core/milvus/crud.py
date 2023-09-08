@@ -54,7 +54,7 @@ def search_vector(vector: list[float], limit: int = 10) -> list[SearchResult]:
     return search_results
 
 
-def distance_2_score(distance: float, threshold: float = 1.0) -> float:
+def distance_2_score(distance: float, threshold: float = 2.0) -> float:
     return (threshold-distance)/threshold*100
 
 

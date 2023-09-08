@@ -1,4 +1,5 @@
 FROM python:3.11.5-bookworm
+RUN rm -rf /etc/apt/sources.list.d/*
 RUN echo "deb http://mirrors.aliyun.com/debian/ bookworm main non-free contrib" > /etc/apt/sources.list
 RUN apt update
 # debian11 以及下

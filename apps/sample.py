@@ -37,7 +37,7 @@ def metadata(meta_uuid: str) -> dict:
 })
 def search_by_file(
     file: UploadFile = File(..., description='图片文件'),
-
+    limit: int = Form(10, default='表示返回搜索最相似的 N 个')
 ):
     with timer('样本查询耗时'):
         try:
@@ -47,7 +47,7 @@ def search_by_file(
             from core.milvus.crud import search_vector
             from core.milvus.schemas import SearchResult
 
-            search_results = search_vector(vector)
+            search_results = search_vector(vector, limit)
 
             data = []
 

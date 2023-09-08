@@ -31,9 +31,11 @@ def insert_row(
 
 def get_row(
     meta_uuid: str
-) -> ImageMeta:
+) -> ImageMeta | None:
     one: ImageMetaTable = ImageMetaTable.get_or_none(
         meta_uuid=meta_uuid)
+    if not one:
+        return None
     return ImageMeta(**model_to_dict(one))
 
 

@@ -6,4 +6,4 @@ WEEK: int = DAY*7
 MONTH: int = DAY*30
 
 
-THRESHOLD = 1.0
+THRESHOLD = 2.0

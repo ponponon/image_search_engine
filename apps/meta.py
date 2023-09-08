@@ -3,28 +3,45 @@ from fastapi import APIRouter
 from fastapi import Query
 from fastapi import FastAPI, File, UploadFile, Form
 from vectors import create_vector
-from apps.schemas import CreateMetaResponse, ListMetaResponse, DeleteMetasResponse, ListMetaResult, CreateMetaResult
+from apps.schemas import CreateMetaResponse, ListMetaResponse, DeleteMetasResponse, ListMetaResult, CreateMetaResult, CreateMeta500ResponseTemplate
 from core.milvus.crud import insert_vector
 from core.fs.utils import get_file_extension
 from core.fs.utils import get_file_extension
 from core.minio.crud import upload
-from core.mysql.crud import insert_row
+from core.mysql.crud import insert_row, get_row
 from core.mysql.models import ImageMetaTable
 from playhouse.shortcuts import model_to_dict
 from utils.md5_helper import get_stream_md5
 import settings
 from loggers import logger
 from utils.time_helpers import timer
-
+from utils.uuid_helpers import get_uuid
 
 meta = APIRouter(tags=["母本接口"], prefix='/meta/image')
 
 
-@meta.post('/file', response_model=CreateMetaResponse, summary='图片母本入库')
+@meta.post(
+    '/file',
+    response_model=CreateMetaResponse,
+    summary='图片母本入库',
+    responses={
+        200: {
+            'model': CreateMetaResponse
+        },
+        500: {
+            'model': CreateMeta500ResponseTemplate
+        },
+    },
+    description="""
+    图片母本入库接口：
+    需要给图片指定 meta_uuid 作为标识符, 长度小于等于 36 个字符（含36）
+    关于重复入库的问题：如果 meta_uuid 重复，接口会返回 status_code 为 500 的响应，表示入库异常
+    """
+)
 def create_meta_by_file(
     file: UploadFile = File(..., description='图片文件'),
     meta_uuid: str | None = Form(
-        None, description='母本标识符，如果入库的时候不指定，系统会随机给一个 uuid4。meta_uuid 要求唯一，系统会做唯一约束')
+        None, description='母本标识符，如果入库的时候不指定，系统会用图片的 md5 值作为 meta_uuid。meta_uuid 要求唯一，系统会做唯一约束')
 ):
     with timer('母本入库耗时'):
         try:
@@ -34,6 +51,14 @@ def create_meta_by_file(
             logger.debug(file.filename)
 
             file_name = file.filename or hash_code
+
+            meta_uuid = meta_uuid or hash_code
+
+            if len(meta_uuid) > 36:
+                raise Exception(f'meta_uuid: {meta_uuid} 大于 36 个字符，入库失败')
+
+            if get_row(meta_uuid=meta_uuid):
+                raise Exception(f'meta_uuid: {meta_uuid} 已存在，不可以重复入库')
 
             logger.debug(file_name)
 
@@ -46,7 +71,7 @@ def create_meta_by_file(
             vector = create_vector(stream)
             milvus_id = insert_vector(vector, hash_code)
             logger.debug(f'milvus_id: {milvus_id}')
-            insert_row(hash_code, milvus_id, file_name, file_path)
+            insert_row(hash_code, milvus_id, file_name, file_path, meta_uuid)
 
             return CreateMetaResponse(
                 succeed=True,
@@ -55,7 +80,8 @@ def create_meta_by_file(
                     'hash_code': hash_code,
                     'milvus_id': milvus_id,
                     'file_name': file_name,
-                    'file_path': file_path
+                    'file_path': file_path,
+                    'meta_uuid': meta_uuid
                 })
             )
         except Exception as error:
