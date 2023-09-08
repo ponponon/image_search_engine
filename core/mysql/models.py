@@ -21,7 +21,8 @@ db = ReconnectMySQLDatabase(
 
 class ImageMetaTable(Model):
     id = AutoField(primary_key=True)
-    hash_code = CharField(unique=True)
+    meta_uuid = CharField(unique=True)
+    hash_code = CharField()
     milvus_id = IntegerField()
     file_name = CharField()
     file_path = CharField(help_text='存储在 minio/oss 中的路径')

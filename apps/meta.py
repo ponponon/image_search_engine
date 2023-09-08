@@ -22,7 +22,9 @@ meta = APIRouter(tags=["母本接口"], prefix='/meta/image')
 
 @meta.post('/file', response_model=CreateMetaResponse, summary='图片母本入库')
 def create_meta_by_file(
-    file: UploadFile = File(..., description='图片文件')
+    file: UploadFile = File(..., description='图片文件'),
+    meta_uuid: str | None = Form(
+        None, description='母本标识符，如果入库的时候不指定，系统会随机给一个 uuid4。meta_uuid 要求唯一，系统会做唯一约束')
 ):
     with timer('母本入库耗时'):
         try:

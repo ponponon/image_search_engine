@@ -14,40 +14,51 @@ def insert_row(
     milvus_id: int,
     file_name: str,
     file_path: str,
+    meta_uuid: str
 ):
     with db.atomic():
-        if not ImageMetaTable.get_or_none(hash_code=hash_code):
+        if not ImageMetaTable.get_or_none(meta_uuid=meta_uuid):
             one: ImageMetaTable = ImageMetaTable.create(
                 hash_code=hash_code,
                 milvus_id=milvus_id,
                 file_name=file_name,
-                file_path=file_path
+                file_path=file_path,
+                meta_uuid=meta_uuid
             )
             # two:ImageMetaExtraTable=ImageMetaExtraTable.create(
             #     file_name=file_name, file_path=file_path)
 
 
 def get_row(
-    hash_code: str
+    meta_uuid: str
 ) -> ImageMeta:
     one: ImageMetaTable = ImageMetaTable.get_or_none(
-        hash_code=hash_code)
+        meta_uuid=meta_uuid)
     return ImageMeta(**model_to_dict(one))
 
 
-def get_rows(
-    hash_code: str
-) -> list[ImageMeta]:
-    many = ImageMetaTable.filter(
-        hash_code=hash_code
-    )
-    return [ImageMeta(**model_to_dict(row)) for row in many]
-
-
-def get_meta_image(hash_code: str) -> ImageMetaTable | None:
-    rows = list(ImageMetaTable.select().where(
+def get_images_meta_uuids_by_hashcode(hash_code: str) -> list[str]:
+    rows = list(ImageMetaTable.select(ImageMetaTable.meta_uuid).where(
         ImageMetaTable.hash_code == hash_code))
     if rows:
-        return rows[0]
+        return [row.meta_uuid for row in rows]
     else:
-        return None
+        return []
+
+
+# def get_rows(
+#     hash_code: str
+# ) -> list[ImageMeta]:
+#     many = ImageMetaTable.filter(
+#         hash_code=hash_code
+#     )
+#     return [ImageMeta(**model_to_dict(row)) for row in many]
+
+
+# def get_meta_image(hash_code: str) -> ImageMetaTable | None:
+#     rows = list(ImageMetaTable.select().where(
+#         ImageMetaTable.hash_code == hash_code))
+#     if rows:
+#         return rows[0]
+#     else:
+#         return None

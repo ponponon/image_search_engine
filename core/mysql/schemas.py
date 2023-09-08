@@ -12,6 +12,7 @@ class MysqlConfig(BaseModel):
 
 class ImageMeta(BaseModel):
     id: int | None
+    meta_uuid: str | None
     hash_code: str | None
     milvus_id: int | None
     file_name: str | None

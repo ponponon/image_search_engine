@@ -1,3 +1,4 @@
+from core.mysql.crud import get_images_meta_uuids_by_hashcode
 import json
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
@@ -13,10 +14,10 @@ from utils.time_helpers import timer
 sample = APIRouter(tags=["样本接口"], prefix='/sample')
 
 
-def metadata(hash_code: str) -> dict:
+def metadata(meta_uuid: str) -> dict:
     from core.mysql.crud import get_row
 
-    data = get_row(hash_code).dict()
+    data = get_row(meta_uuid).dict()
 
     file_path: str = data['file_path']
 
@@ -48,8 +49,14 @@ def search_by_file(
 
             search_results = search_vector(vector)
 
-            data = [SearchSampleResult(
-                **(s.dict() | metadata(s.hash_code))) for s in search_results]
+            data = []
+
+            for search_result in search_results:
+                images_meta_uuids = get_images_meta_uuids_by_hashcode(
+                    search_result.hash_code)
+                for image_meta_uuid in images_meta_uuids:
+                    data.append(SearchSampleResult(
+                        **(search_result.dict() | metadata(image_meta_uuid))))
 
             return SearchSampleResponse(
                 succeed=True,
