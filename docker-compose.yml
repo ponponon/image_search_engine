@@ -1,0 +1,19 @@
+version: "3"
+services:
+  image_search_engine:
+    container_name: image_search_engine
+    image: ponponon/image_search_engine:2023.09.07.1
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "1"
+    environment:
+      - RUN_MODE=e5
+    # volumes:
+    #   - ./config.yaml:/code/config.yaml
+    ports:
+      - "6200:6200"
+    command: python api.py
+
+  
