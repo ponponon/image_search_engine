@@ -1,6 +1,6 @@
 loguru
 peewee
-pydantic
+pydantic<2.0.0
 PyMySQL
 python-dotenv
 python-multipart
