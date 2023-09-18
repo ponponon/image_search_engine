@@ -8,7 +8,7 @@ def get_min_utc_timestamp() -> datetime:
     return (datetime(year=1970, month=1, day=1) + timedelta(seconds=1)).replace(tzinfo=timezone.utc)
 
 
-def get_utc_now_timestamp(tzinfo:bool=True) -> datetime:
+def get_utc_now_timestamp(tzinfo: bool = True) -> datetime:
     """ https://blog.csdn.net/ball4022/article/details/101670024 """
     if tzinfo:
         return datetime.utcnow().replace(tzinfo=timezone.utc)

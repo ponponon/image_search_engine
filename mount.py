@@ -20,6 +20,7 @@ class Swagger:
             StaticFiles(directory=BASE_DIR / 'static'/'swagger-ui-oas3.1'),
             name='static'
         )
+
         @app.get("/docs", include_in_schema=False)
         async def custom_swagger_ui_html():
             return get_swagger_ui_html(

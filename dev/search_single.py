@@ -35,8 +35,6 @@ with open(file_apth, 'rb') as file:
 images: list[dict] = response.json()
 
 
-
-
 html = """
 <style>
 .compare_result{flex-wrap: wrap}

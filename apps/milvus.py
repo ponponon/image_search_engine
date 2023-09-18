@@ -5,7 +5,7 @@ from fastapi import FastAPI, Form, Query
 from loggers import logger
 import settings
 
-milvus = APIRouter(tags=["milvus 的调试和运维接口"],prefix='/milvus')
+milvus = APIRouter(tags=["milvus 的调试和运维接口"], prefix='/milvus')
 
 
 @milvus.post('/', summary='milvus 健康检查接口')
