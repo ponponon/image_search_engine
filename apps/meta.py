@@ -171,6 +171,10 @@ def delete_all_meta(
             logger.debug(expr[:100])
             logger.debug(collection.delete(expr=expr))
             collection.flush()
+        return DeleteMetasResponse(
+            succeed=True,
+            message=f'已清空所有母本'
+        )
     except Exception as error:
         logger.exception(error)
         return JSONResponse(DeleteMetasResponse(
