@@ -27,13 +27,20 @@ def insert_vector(vector: list[float], hash_code: str) -> int:
 
 def search_vector(vector: list[float], offset: int = 0, limit: int = 10) -> list[SearchResult]:
     from pymilvus.orm.search import SearchResult as MilvusSearchResult
+    from loggers import logger
+
+    logger.debug(f'offset: {offset}, limit: {limit}')
     rows: MilvusSearchResult = collection.search(
         data=[vector],
-        param={"metric_type": 'L2', "params": {"nprobe": 32}},
+        param={
+            "metric_type": 'L2',
+            "nprobe": 32,
+            "offset": offset
+        },
         anns_field='image_vector',
         output_fields=['id', 'hash_code'],
         limit=limit,
-        offset=offset
+        # offset=offset
     )
     if not rows:
         return []
