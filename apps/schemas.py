@@ -69,6 +69,7 @@ class ListMetaResponse(BaseModel):
     succeed: bool = Field(..., description='操作是否成功')
     message: str = Field(..., description='描述')
     data: list[ListMetaResult] = Field([])
+    total: int | None = Field(None, description='表示一共有多少个母本')
 
 
 class DeleteMetasResponse(BaseModel):

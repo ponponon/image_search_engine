@@ -122,10 +122,14 @@ def list_meta(
             ))
             for image in _images
         ]
+
+        total: int = ImageMetaTable.select().count()
+
         return ListMetaResponse(
             succeed=True,
             message=f'获取 {len(images)} 个母本',
-            data=images
+            data=images,
+            total=total
         )
     except Exception as error:
         logger.exception(error)
