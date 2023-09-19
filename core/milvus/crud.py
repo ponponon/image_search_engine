@@ -25,7 +25,7 @@ def insert_vector(vector: list[float], hash_code: str) -> int:
     return insert_result.primary_keys[0]
 
 
-def search_vector(vector: list[float], limit: int = 10) -> list[SearchResult]:
+def search_vector(vector: list[float], offset: int = 0, limit: int = 10) -> list[SearchResult]:
     from pymilvus.orm.search import SearchResult as MilvusSearchResult
     rows: MilvusSearchResult = collection.search(
         data=[vector],
@@ -33,6 +33,7 @@ def search_vector(vector: list[float], limit: int = 10) -> list[SearchResult]:
         anns_field='image_vector',
         output_fields=['id', 'hash_code'],
         limit=limit,
+        offset=offset
     )
     if not rows:
         return []
