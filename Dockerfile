@@ -20,4 +20,7 @@ COPY requirements-prd.txt /code/
 RUN pip install -r requirements-prd.txt -i https://mirror.baidu.com/pypi/simple
 
 
+RUN mkdir -p /code/models
+RUN wget -P /code/models http://cmp.felk.cvut.cz/cnnimageretrieval/data/networks/gl18/gl18-tl-resnet50-gem-w-83fdc30.pth
+
 ADD . /code/
