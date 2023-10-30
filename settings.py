@@ -1,3 +1,4 @@
+from apps.schemas import APIConfig
 import os
 import yaml
 from mark import BASE_DIR
@@ -27,3 +28,5 @@ MINIO_CONFIG = MinioConfig(**(current_config['minio']))
 
 
 minio_public_base_url = f'http://{MINIO_CONFIG.end_point}/{MINIO_CONFIG.bucket}'
+
+API_CONFIG = APIConfig(**(current_config['api']))

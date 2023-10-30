@@ -1,5 +1,5 @@
 NAME = ponponon/image_search_engine
-VERSION = 2023.09.07.1
+VERSION = 2023.10.30.1
 
 .PHONY: build up stop logs
 
@@ -9,13 +9,13 @@ stop: docker-compose-stop
 logs: docker-compose-logs
 
 docker-build:
-	docker build -t "${NAME}:${VERSION}" .
+	docker build -t "${NAME}:${VERSION}" . -f deploy/docker/private/Dockerfile
 
 docker-compose-up:
-	docker-compose up -d
+	docker-compose -f deploy/docker/private/docker-compose.yml up -d
 
 docker-compose-stop:
-	docker-compose stop
+	docker-compose -f deploy/docker/private/docker-compose.yml stop
 
 docker-compose-logs:
-	docker-compose logs --tail=100 -f
+	docker-compose -f deploy/docker/private/docker-compose.yml logs --tail=100 -f

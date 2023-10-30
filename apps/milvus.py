@@ -26,3 +26,13 @@ def flush_milvus():
     from core.milvus.models import milvus
     milvus.flush(collection_names=[settings.MILVUS_CONFIG.collection.name])
     return True
+
+
+# @milvus.post('/rebuild_vector_index', summary='重建 milvus 集合的向量索引')
+# def rebuild_vector_index(): #TODO: https://github.com/milvus-io/pymilvus/issues/1733
+#     from core.milvus.models import collection, connections
+
+#     collection.create_index
+
+#     milvus.flush(collection_names=[settings.MILVUS_CONFIG.collection.name])
+#     return True

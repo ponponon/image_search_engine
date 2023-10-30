@@ -72,3 +72,13 @@ def query_vector(hash_code: str) -> list:
         output_fields=['id', 'hash_code']
     )
     return result
+
+
+def delete_vector(hash_code: str):
+    query_result: list[dict[str, int]] = collection.query(
+        expr=f"hash_code in ['{hash_code}']", output_fields=['id'])
+    ids = [item.get('id') for item in query_result]
+    if ids:
+        expr = f'id in {ids}'
+        collection.delete(expr=expr)
+        collection.flush()

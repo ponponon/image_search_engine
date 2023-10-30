@@ -1,5 +1,0 @@
-mycli
-ipython
-autopep8
-psutil
-glances

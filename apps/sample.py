@@ -6,7 +6,6 @@ from fastapi import FastAPI, Form, Query
 from loggers import logger
 import settings
 from fastapi import FastAPI, File, UploadFile, Form
-from vectors import create_vector
 from apps.schemas import SearchSampleResponse, SearchSampleResult
 from utils.time_helpers import timer
 
@@ -23,7 +22,6 @@ def metadata(meta_uuid: str) -> dict:
 
     data['file_url'] = f'http://{settings.MINIO_CONFIG.end_point}/image-search-engine/' + \
         file_path.removeprefix('/')
-
     return data
 
 
@@ -39,16 +37,15 @@ def search_by_file(
     file: UploadFile = File(..., description='图片文件'),
     offset: int = Form(0, description='用于控制翻页, 表示起始位置'),
     limit: int = Form(100, description='表示返回搜索最相似的 N 个'),
-
 ):
     with timer('样本查询耗时'):
         try:
             stream: bytes = file.file.read()
-            vector = create_vector(stream)
-
+            from vectors import create_vector
             from core.milvus.crud import search_vector
             from core.milvus.schemas import SearchResult
 
+            vector = create_vector(stream)
             search_results = search_vector(vector, offset, limit)
 
             data = []

@@ -6,6 +6,8 @@ resnet: ResNet = ResNet(
     runtime_model='models/gl18-tl-resnet50-gem-w-83fdc30.pth',
     device='cpu'
 )
+# from PIL import ImageFile
+# ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 def create_vector(file: BytesIO | bytes) -> list[float]:

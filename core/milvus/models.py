@@ -9,11 +9,21 @@ from pymilvus import (
 from loggers import logger
 
 from pymilvus import DataType
+from pymilvus import connections, db
 
+
+conn = connections.connect(
+    host=settings.MILVUS_CONFIG.host,
+    port=settings.MILVUS_CONFIG.port
+)
+
+if settings.MILVUS_CONFIG.database not in db.list_database():
+    db.create_database(settings.MILVUS_CONFIG.database)
 
 connections.connect(
     host=settings.MILVUS_CONFIG.host,
     port=settings.MILVUS_CONFIG.port,
+    db_name=settings.MILVUS_CONFIG.database
 )
 
 schema = CollectionSchema([

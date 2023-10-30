@@ -15,56 +15,29 @@ from vectors import create_vector
 from mark import BASE_DIR
 from PIL import UnidentifiedImageError
 from utils.md5_helper import get_file_md5
+import requests
+
+from concurrent.futures.thread import ThreadPoolExecutor
+
+pool = ThreadPoolExecutor(max_workers=10)
 
 
-resnet: ResNet = ResNet(
-    weight_file='weight/gl18-tl-resnet50-gem-w-83fdc30.pth'
-)
+def func():
+    try:
+        with open('testing/resource/emoji002.jpg', 'rb') as file:
+            response = requests.post(
+                'http://127.0.0.1:6200/sample/file',
+                files={
+                    'file': file
+                })
+            logger.debug(response.text)
+            assert response.status_code == 200
 
-images_dir: Path = BASE_DIR/'resources/images/all'
+    except Exception as error:
+        logger.warning(error)
 
 
-def get_file_size(file_path: Path) -> int:
-    return os.path.getsize(file_path)
+for _ in range(10000):
+    pool.submit(func)
 
-
-formats = ('jpg', 'jpeg', 'png')
-
-images = [images_dir /
-          f for f in os.listdir(images_dir) if f.endswith(formats)]
-
-logger.debug(f'一共有 {len(images)} 个图片')
-logger.debug(f'开始构建mapping')
-mapping = {}
-
-for image in images:
-    hash_code = get_file_md5(image)
-    mapping[hash_code] = str(image)
-logger.debug(f'构建mapping完成')
-
-src_image = Path(
-    '/Users/ponponon/Desktop/code/me/image_search_engine/resources/images/all/zidanfei10428.jpg')
-
-hit_images = search_vector(resnet.gen_vector(src_image), 10000)
-logger.debug(f'搜索完毕')
-html = """
-<style> 
-.compare_result{flex-wrap: wrap} 
-.compare_result img{width:300px} 
-</style> 
-"""
-
-for hit_image in hit_images:
-    html += f"""
-    <p>距离:{hit_image.distance}</p>
-<p>分数:{hit_image.score}</p>
-<div class="compare_result">
-<img src="{str(src_image)}">
-<img src="{mapping[hit_image.hash_code]}">
-</div>
-
-<p>------------------------</p>
-    """
-
-with open('index.html', 'w', encoding='utf-8') as file:
-    file.write(html)
+pool.shutdown(wait=True)

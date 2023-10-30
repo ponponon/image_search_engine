@@ -1,3 +1,4 @@
+import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,8 +6,7 @@ from mount import Swagger
 from apps.dev import dev
 from apps.sample import sample
 from apps.meta import meta
-
-version = "2023.09.07.1"
+import settings
 
 description = """
 这个系统的逻辑是，把图片转成向量，512 维度的向量，512 个  float，一个 float 4字节
@@ -22,8 +22,14 @@ description = """
 检索向量的效率：取决于母本量
 """
 
-app = FastAPI(title='「以图搜图」接口', debug=False,
-              docs_url=None, redoc_url=None, version=version, description=description)
+app = FastAPI(
+    title='「以图搜图」接口',
+    debug=settings.API_CONFIG.debug,
+    docs_url=None,
+    redoc_url=None,
+    version=settings.API_CONFIG.version,
+    description=description
+)
 
 
 app.add_middleware(
@@ -38,7 +44,7 @@ Swagger.doc(app)
 
 
 @app.get('/')
-async def root():
+def root():
     return {"message": "Hello World"}
 
 
@@ -52,7 +58,7 @@ if __name__ == "__main__":
     uvicorn.run(
         app='api:app',
         host="0.0.0.0",
-        port=6200,
-        # reload=True
-        workers=16
+        port=settings.API_CONFIG.bind_port,
+        reload=settings.API_CONFIG.reload,
+        workers=settings.API_CONFIG.workers_num
     )

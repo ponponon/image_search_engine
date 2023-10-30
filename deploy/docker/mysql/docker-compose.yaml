@@ -1,21 +1,14 @@
 version: "3"
 
 services:
-  # mysqld-exporter:
-  #     container_name: mysqld-exporter
-  #     image: prom/mysqld-exporter
-  #     environment:
-  #         DATA_SOURCE_NAME: root:123456@(192.168.26.174:3306)/
-  #     ports:
-  #         - "9104:9104"
-
   mysql8:
     container_name: mysql8
-    image: mysql:8
+    image: mysql:8.0.34
     restart: always
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_ROOT_PASSWORD=Ep7zMmBfXm4y3wx
     volumes:
       - ./volumes/:/var/lib/mysql
+      - ./my-custom.cnf:/etc/mysql/conf.d/my-custom.cnf

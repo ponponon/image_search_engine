@@ -3,6 +3,7 @@ from core.minio.models import client, bucket
 import settings
 from io import BytesIO
 from core.fs.utils import get_file_mime
+from minio.error import S3Error
 
 
 def download(file_path: str) -> bytes:
@@ -10,11 +11,14 @@ def download(file_path: str) -> bytes:
 
 
 def exist(file_path: str) -> bool:
-    objects = client.list_objects(bucket, file_path)
-
-    for ob in objects:
+    try:
+        client.stat_object(bucket, file_path)
         return True
-    return False
+    except Exception as error:
+        if 'code: NoSuchKey' in str(error):
+            return False
+        else:
+            raise error
 
 
 def upload(stream: bytes, file_path: str) -> bool:

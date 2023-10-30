@@ -42,9 +42,12 @@ def init_system():
         )
 
 
-@dev.post('/url', summary='milvus 健康检查接口')
+@dev.post('/flush', summary='milvus 集合 flush')
 def flush_milvus():
     try:
+        from core.milvus.models import collection
+
+        collection.flush()
         return JSONResponse(
             {}, status_code=200,
         )
@@ -53,13 +56,6 @@ def flush_milvus():
         return JSONResponse(
             {}, status_code=500,
         )
-
-
-@dev.post('/file', summary='刷新 milvus')
-def flush_milvus():
-    from core.milvus.models import milvus
-    milvus.flush(collection_names=[settings.MILVUS_CONFIG.collection.name])
-    return True
 
 
 @dev.post('/file_url', summary='刷新 milvus')
@@ -105,3 +101,38 @@ def db_reconnect(
 
         for row in rows:
             logger.debug(row)
+
+
+@dev.post('/show_mem', summary='show_mem')
+def show_mem(
+):
+    # import gc
+    # import sys
+
+    # def show_memory():
+    #     print("*" * 60)
+    #     objects_list = []
+    #     for obj in gc.get_objects():
+    #         size = sys.getsizeof(obj)
+    #         objects_list.append((obj, size))
+    #     for obj, size in sorted(objects_list, key=lambda x: x[1], reverse=True)[:10]:
+    #         print(
+    #             f"OBJ: {id(obj)}, TYPE: {type(obj)} SIZE: {size/1024/1024:.2f}MB {str(obj)[:100]}")
+
+    # show_memory()
+
+    # from guppy import hpy
+
+    # h = hpy()
+
+    # # Your code here
+
+    # heap = h.heap()
+    # top_10 = heap[:10]
+    # print(top_10)
+
+    from mem_top import mem_top
+
+    print(mem_top())
+
+    return {}

@@ -1,0 +1,30 @@
+version: "3"
+services:
+  image_search_engine:
+    container_name: image_search_engine
+    restart: always
+    image: ponponon/image_search_engine:2023.10.30.1
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "1"
+    environment:
+      - RUN_MODE=t4
+      - LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
+    ports:
+      - "6200:6200"
+    command: python api.py
+    volumes:
+      - ./config.yaml:/code/config.yaml
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 1200M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6200"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 30s

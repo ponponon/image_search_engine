@@ -31,6 +31,7 @@ class MilvusCollectionConfig(BaseModel):
 class MilvusConfig(BaseModel):
     host: str = Field(...)
     port: str = Field(...)
+    database: str = Field('default')
     collection: MilvusCollectionConfig = Field(...)
 
 
