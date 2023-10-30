@@ -132,6 +132,7 @@ services:
       - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=Ep7zMmBfXm4y3wx
+      - MYSQL_DATABASE=image_search_engine
     volumes:
       - ./volumes/mysql/:/var/lib/mysql
       - ./my-custom.cnf:/etc/mysql/conf.d/my-custom.cnf
