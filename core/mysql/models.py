@@ -70,6 +70,7 @@ class ImageMetaTable(Model):
 
 model_set: list[Model] = [ImageMetaTable]
 
+db.create_tables(model_set)
 
 if __name__ == '__main__':
     db.drop_tables(model_set)
