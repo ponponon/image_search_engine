@@ -10,7 +10,7 @@ services:
         max-size: "20m"
         max-file: "1"
     environment:
-      - RUN_MODE=t4
+      - RUN_MODE=docker
       - LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
     ports:
       - "6200:6200"
