@@ -13,7 +13,7 @@ def query_dns(domain, record_type):
         print(f"Error querying {domain}: {str(e)}")
 
 # 示例查询
-domain = "public_minio"
+domain = "image-search-engine-minio"
 record_type = "A"  # 可以是A, AAAA, MX, CNAME等
 
 query_dns(domain, record_type)

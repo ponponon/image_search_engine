@@ -24,7 +24,7 @@ docker:
   minio:
     access_key: ponponon
     secret_key: ponponon
-    end_point: public_minio:9000
+    end_point: image-search-engine-minio:9000
     bucket: image-search-engine
   api:
     upload_minio: true
