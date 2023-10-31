@@ -1,5 +1,5 @@
 NAME = ponponon/image_search_engine
-VERSION = 2023.10.30.1
+VERSION = 2023.10.31.1
 
 .PHONY: build up stop logs
 
