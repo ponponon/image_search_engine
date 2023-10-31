@@ -1,0 +1,35 @@
+docker:
+  mysql:
+    host: mysql8
+    port: 3306
+    username: root
+    password: Ep7zMmBfXm4y3wx
+    database_name: image_search_engine
+  milvus:
+    host: standalone
+    port: 19530
+    collection:
+      name: image_search_engine
+      vector_dim: 64
+      search:
+        threshold: 0.6
+
+      index: # 索引，加速查询
+        name: image_vector
+        params:
+          index_type: IVF_SQ8
+          params:
+            nlist: 128
+          metric_type: L2
+  minio:
+    access_key: ponponon
+    secret_key: ponponon
+    end_point: public_minio:9000
+    bucket: image-search-engine
+  api:
+    upload_minio: true
+    workers_num: 1
+    bind_port: 6200
+    debug: false
+    reload: false
+    version: 2023.10.13.3

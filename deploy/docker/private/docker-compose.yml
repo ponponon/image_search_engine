@@ -129,6 +129,11 @@ services:
     environment:
       MINIO_ACCESS_KEY: ponponon #管理后台用户名
       MINIO_SECRET_KEY: ponponon #管理后台密码，最小8个字符
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
 
   mysql8:
     container_name: mysql8
@@ -142,3 +147,8 @@ services:
     volumes:
       - ./volumes/mysql/:/var/lib/mysql
       - ./my-custom.cnf:/etc/mysql/conf.d/my-custom.cnf
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
