@@ -64,63 +64,188 @@ milvus 是一个分布式的向量数据库，专门存储向量的
 
 关于 milvus 的更多内容，可以参考：https://milvus.io/
 
-### 安装运行依赖
+### 运行程序
 
-如果你不熟悉这些中间件，或者不想把时间浪费在部署这些中间件上，我们也为你准备了 docker-compose 脚本一键运行
+使用下面的 docker-compose.yaml 文件，可以一键启动以图搜图服务的前端、后端程序、以及相关的对象存储、向量数据库、元数据数据库
 
-> 中间件指的就是 Mysql、minio、milvus
+```yaml
+version: "3"
+services:
+  image-search-engine:
+    container_name: image-search-engine
+    restart: always
+    image: ponponon/image_search_engine:2023.11.01.1
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "1"
+    environment:
+      - RUN_MODE=docker
+      - LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
+    ports:
+      - "6200:6200"
+    command: python api.py
+    volumes:
+      - ./config.yaml:/code/config.yaml
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 1200M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6200"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - "etcd"
+      - "minio"
+      - "standalone"
+      - "image-search-engine-minio"
+      - "mysql8"
+  image-search-web:
+    container_name: image_search_web
+    restart: always
+    image: ponponon/image_search_web:2023.11.01.1
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "5"
+    ports:
+      - "6201:6201"
+    depends_on:
+      - "etcd"
+      - "minio"
+      - "standalone"
+      - "image-search-engine-minio"
+      - "mysql8"
+      - "image-search-engine"
+  etcd:
+    container_name: image-search-engine-milvus-etcd
+    image: quay.io/coreos/etcd:v3.5.5
+    restart: always
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+      - ETCD_SNAPSHOT_COUNT=50000
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/etcd:/etcd
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:2379/health"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
 
-运行 mysql
+  minio:
+    container_name: image-search-engine-milvus-minio
+    image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    restart: always
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/minio:/minio_data
+    command: minio server /minio_data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
 
-```shell
-cd deploy/docker/mysql
-docker-compose up -d
+  standalone:
+    container_name: image-search-engine-milvus-standalone
+    image: milvusdb/milvus:v2.3.2
+    command: ["milvus", "run", "standalone"]
+    restart: always
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/milvus:/var/lib/milvus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 30s
+      start_period: 90s
+      timeout: 20s
+      retries: 3
+    ports:
+      - "19530:19530"
+      - "9091:9091"
+    depends_on:
+      - "etcd"
+      - "minio"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
+
+  zilliz_attu:
+    container_name: zilliz_attu
+    image: zilliz/attu:v2.3.2
+    restart: always
+    environment:
+      HOST_URL: http://0.0.0.0:8000
+      MILVUS_URL: standalone:19530
+    ports:
+      - "8000:3000"
+
+  image-search-engine-minio:
+    container_name: image-search-engine-minio
+    restart: always
+    image: minio/minio:RELEASE.2023-09-04T19-57-37Z
+    ports:
+      - "9000:9000" # client port
+      - "9002:9002" # console port
+    command: server /data --console-address ":9002" #指定容器中的目录 /data
+    volumes:
+      - ./volumes/image-search-engine-minio/:/data
+    environment:
+      MINIO_ACCESS_KEY: ponponon #管理后台用户名
+      MINIO_SECRET_KEY: ponponon #管理后台密码，最小8个字符
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  mysql8:
+    container_name: mysql8
+    image: mysql:8.0.34
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=Ep7zMmBfXm4y3wx
+      - MYSQL_DATABASE=image_search_engine
+    volumes:
+      - ./volumes/mysql/:/var/lib/mysql
+      - ./my-custom.cnf:/etc/mysql/conf.d/my-custom.cnf
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 ```
 
-运行 minio
+使用 http://127.0.0.1:6201/ 或者 http://{yourIp}:6201/ 访问以图搜图的前端服务
 
-```shell
-cd deploy/docker/minio
-docker-compose up -d
-```
-
-运行 milvus
-
-```shell
-cd deploy/docker/milvus
-docker-compose up -d
-```
-
-> 注意：如果你细心，你会发现 milvus 的 docker-compose.yaml 文件中，也存在一个 minio。这个时候你心中是不是就有疑问？为什么我们还要额外运行一个 minio？一共就有两个 minio 了？是的！我们需要两个 minio ，milvus 的 minio 是 milvus 运行所需要的，用于持久化向量数据等用途。而我们单独部署的 minio 是用于存储图片的
-
-## 运行程序本体
-
-运行下面的命令，就可以启动 api 服务
-
-```python
-python api.py
-```
-
-> 依赖的 python 版本 >= 3.10
-
-该 api 服务负责以下功能：
-
-- 母本入库
-- 查看母本
-- 样本查询
-
-如果运行成功，你会看到类似下面的输出：
-
-```shell
-╰─➤  python api.py
-2023-07-05 23:02:23.707 | DEBUG    | settings:<module>:12 - 当前的运行模式: local
-INFO:     Started server process [75085]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:6200 (Press CTRL+C to quit)
-```
-
-此时你可以在浏览器输入 http://127.0.0.1:6200/docs 查看接口文档
+如果你想要包装这个以图搜图服务，可以访问 http://{yourIp}:6200/docs 可以访问后端 API 的接口文档
 
 ## 相关项目
 
