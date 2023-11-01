@@ -16,7 +16,7 @@ docker-compose-up:
 	docker-compose -f deploy/docker/private/docker-compose.yml up -d
 
 docker-compose-stop:
-	docker-compose -f deploy/docker/private/docker-compose.yml stop
+	docker-compose -f deploy/docker/private/docker-compose.yml down
 
 docker-compose-logs:
 	docker-compose -f deploy/docker/private/docker-compose.yml logs --tail=100 -f

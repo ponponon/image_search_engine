@@ -204,6 +204,11 @@ services:
       MILVUS_URL: standalone:19530
     ports:
       - "8000:3000"
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
 
   image-search-engine-minio:
     container_name: image-search-engine-minio
@@ -223,6 +228,11 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
 
   mysql8:
     container_name: mysql8
@@ -241,6 +251,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "1"
+        max-size: "50m"
 ```
 
 Use http://127.0.0.1:6201/ or http://{yourIp}:6201/ to access the map search front-end service.
