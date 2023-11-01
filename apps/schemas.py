@@ -22,6 +22,7 @@ class SearchSampleResult(BaseModel):
     updated_at: datetime = Field(..., description='图片最后更新时间')
     file_url: str = Field(...,
                           description='存储在 oss/minio 中的路径，添加 http/https 前缀，允许直接公网访问')
+    file_relative_url: str = Field(...,description='但无法直接访问到 minio 的时候，使用相对路径，让前端对应的 nginx 做代理转发访问 minio')
 
 
 class SearchSampleResponse(BaseModel):
@@ -61,8 +62,8 @@ class MetaResult(BaseModel):
     file_path: str = Field(..., description='存储在 oss/minio 中的路径')
     created_at: datetime = Field(..., description='图片入库时间')
     updated_at: datetime = Field(..., description='图片最后更新时间')
-    file_url: str = Field(...,
-                          description='存储在 oss/minio 中的路径，添加 http/https 前缀，允许直接公网访问')
+    file_url: str = Field(...,description='存储在 oss/minio 中的路径，添加 http/https 前缀，允许直接公网访问')
+    file_relative_url: str = Field(...,description='但无法直接访问到 minio 的时候，使用相对路径，让前端对应的 nginx 做代理转发访问 minio')
 
 
 class ListMetaResponse(BaseModel):

@@ -28,5 +28,6 @@ MINIO_CONFIG = MinioConfig(**(current_config['minio']))
 
 
 minio_public_base_url = f'http://{MINIO_CONFIG.end_point}/{MINIO_CONFIG.bucket}'
+minio_relative_base_url = f'/{MINIO_CONFIG.bucket}'
 
 API_CONFIG = APIConfig(**(current_config['api']))

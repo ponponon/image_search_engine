@@ -20,8 +20,8 @@ def metadata(meta_uuid: str) -> dict:
 
     file_path: str = data['file_path']
 
-    data['file_url'] = f'http://{settings.MINIO_CONFIG.end_point}/image-search-engine/' + \
-        file_path.removeprefix('/')
+    data['file_url'] = f'{settings.minio_public_base_url}/{file_path}'
+    data['file_relative_url'] = f'{settings.minio_relative_base_url}/{file_path}'
     return data
 
 

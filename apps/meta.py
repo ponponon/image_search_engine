@@ -124,8 +124,11 @@ def list_meta(
         images = [
             MetaResult(**(
                 model_to_dict(image) | {
-                    'file_url': f'{settings.minio_public_base_url}/{image.file_path}'}
-            ))
+                    'file_url': f'{settings.minio_public_base_url}/{image.file_path}',
+                    'file_relative_url': f'{settings.minio_relative_base_url}/{image.file_path}',
+                }
+            )
+            )
             for image in _images
         ]
 
@@ -330,7 +333,9 @@ def get_meta(
             succeed=True,
             message=f'统计母本成功',
             data=MetaResult(**image | {
-                    'file_url': f'{settings.minio_public_base_url}/{image.get("file_path","")}'})
+                    'file_url': f'{settings.minio_public_base_url}/{image.get("file_path","")}',
+                    'file_relative_url': f'{settings.minio_relative_base_url}/{image.get("file_path","")}',
+            })
         )
     except Exception as error:
         logger.exception(error)

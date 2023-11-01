@@ -3,7 +3,7 @@ services:
   image-search-engine:
     container_name: image-search-engine
     restart: always
-    image: ponponon/image_search_engine:2023.10.31.1
+    image: ponponon/image_search_engine:2023.11.01.1
     logging:
       driver: json-file
       options:
@@ -37,7 +37,7 @@ services:
   image-search-web:
     container_name: image_search_web
     restart: always
-    image: ponponon/image_search_web:2023.10.31.1
+    image: ponponon/image_search_web:2023.11.01.1
     logging:
       driver: json-file
       options:
