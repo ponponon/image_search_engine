@@ -217,12 +217,12 @@ services:
     ports:
       - "9000:9000" # client port
       - "9002:9002" # console port
-    command: server /data --console-address ":9002" #指定容器中的目录 /data
+    command: server /data --console-address ":9002" 
     volumes:
       - ./volumes/image-search-engine-minio/:/data
     environment:
-      MINIO_ACCESS_KEY: ponponon #管理后台用户名
-      MINIO_SECRET_KEY: ponponon #管理后台密码，最小8个字符
+      MINIO_ACCESS_KEY: ponponon 
+      MINIO_SECRET_KEY: ponponon 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -257,6 +257,60 @@ services:
         max-file: "1"
         max-size: "50m"
 ```
+
+We also need to prepare two external files
+
+A custom configuration file, `my-custom.cnf`, which modifies the default configuration of mysql.
+
+```cnf
+[mysqld]
+max_connections = 3000
+transaction-isolation = READ-COMMITTED
+```
+
+The other is the `config.yaml` file that defines the back-end service
+
+```yaml
+docker:
+  mysql:
+    host: mysql8
+    port: 3306
+    username: root
+    password: Ep7zMmBfXm4y3wx
+    database_name: image_search_engine
+  milvus:
+    host: standalone
+    port: 19530
+    collection:
+      name: image_search_engine
+      vector_dim: 64
+      search:
+        threshold: 0.6
+
+      index:
+        name: image_vector
+        params:
+          index_type: IVF_SQ8
+          params:
+            nlist: 128
+          metric_type: L2
+  minio:
+    access_key: ponponon
+    secret_key: ponponon
+    end_point: image-search-engine-minio:9000
+    bucket: image-search-engine
+  api:
+    upload_minio: true
+    workers_num: 1
+    bind_port: 6200
+    debug: false
+    reload: false
+    version: 2023.10.13.3
+```
+
+
+Put the above two `config.yaml`, `my-custom.cnf` and `docker-compose.yaml` in the same path, and then `docker-compose up -d` starts all containers with one click
+
 
 Use http://127.0.0.1:6201/ or http://{yourIp}:6201/ to access the map search front-end service.
 

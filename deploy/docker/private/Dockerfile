@@ -13,10 +13,10 @@ RUN mkdir /code
 WORKDIR /code
 
 COPY requirements-dev.txt /code/
-RUN pip install -r requirements-dev.txt -i https://mirror.baidu.com/pypi/simple
+RUN pip install -r requirements-dev.txt -i https://mirror.baidu.com/pypi/simple && rm -rf /root/.cache
 
 COPY requirements-prd.txt /code/
-RUN pip install -r requirements-prd.txt -i https://mirror.baidu.com/pypi/simple
+RUN pip install -r requirements-prd.txt -i https://mirror.baidu.com/pypi/simple && rm -rf /root/.cache
 
 
 RUN mkdir -p /code/models

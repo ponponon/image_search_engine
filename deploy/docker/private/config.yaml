@@ -28,7 +28,7 @@ docker:
     bucket: image-search-engine
   api:
     upload_minio: true
-    workers_num: 32
+    workers_num: 1
     bind_port: 6200
     debug: false
     reload: false

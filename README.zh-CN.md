@@ -258,6 +258,59 @@ services:
         max-size: "50m"
 ```
 
+
+同时我们需要准备两个外部文件
+
+一个是修改 mysql 默认配置的自定义配置文件 `my-custom.cnf`
+
+```cnf
+[mysqld]
+max_connections = 3000
+transaction-isolation = READ-COMMITTED
+```
+
+另一个是定义后端服务的 `config.yaml` 文件
+
+```yaml
+docker:
+  mysql:
+    host: mysql8
+    port: 3306
+    username: root
+    password: Ep7zMmBfXm4y3wx
+    database_name: image_search_engine
+  milvus:
+    host: standalone
+    port: 19530
+    collection:
+      name: image_search_engine
+      vector_dim: 64
+      search:
+        threshold: 0.6
+
+      index:
+        name: image_vector
+        params:
+          index_type: IVF_SQ8
+          params:
+            nlist: 128
+          metric_type: L2
+  minio:
+    access_key: ponponon
+    secret_key: ponponon
+    end_point: image-search-engine-minio:9000
+    bucket: image-search-engine
+  api:
+    upload_minio: true
+    workers_num: 1
+    bind_port: 6200
+    debug: false
+    reload: false
+    version: 2023.10.13.3
+```
+
+将上面两个 `config.yaml`、`my-custom.cnf` 和 `docker-compose.yaml` 放在同一路径，然后 `docker-compose up -d` 一键启动所有容器
+
 使用 http://127.0.0.1:6201/ 或者 http://{yourIp}:6201/ 访问以图搜图的前端服务
 
 如果你想要包装这个以图搜图服务，可以访问 http://{yourIp}:6200/docs 可以访问后端 API 的接口文档

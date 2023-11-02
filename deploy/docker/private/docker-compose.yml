@@ -17,11 +17,11 @@ services:
     command: python api.py
     volumes:
       - ./config.yaml:/code/config.yaml
-    deploy:
-      resources:
-        limits:
-          cpus: "4"
-          memory: 1200M
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "4"
+    #       memory: 1200M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6200"]
       interval: 30s
