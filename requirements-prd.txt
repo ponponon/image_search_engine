@@ -14,4 +14,4 @@ dnspython==2.2.1
 minio
 filetype
 iv2
-torch
+torch==2.0.1

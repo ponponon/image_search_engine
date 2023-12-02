@@ -3,7 +3,4 @@ ipython
 autopep8
 psutil
 glances
-guppy3
-pyrasite
-mem_top
-py-spy
+ruff

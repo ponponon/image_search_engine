@@ -33,7 +33,7 @@ def custom_timestamp(base_timestamp: datetime, seconds: int, reduce=False):
 def parse_datetime(value: str) -> datetime | None:
     try:
         return pydantic_parse_datetime(value)
-    except Exception as error:
+    except Exception:
         return None
 
 
