@@ -1,5 +1,6 @@
 import dns.resolver
 
+
 def query_dns(domain, record_type):
     try:
         answers = dns.resolver.resolve(domain, record_type)
@@ -11,6 +12,7 @@ def query_dns(domain, record_type):
         print(f"No {record_type} records found for {domain}")
     except Exception as e:
         print(f"Error querying {domain}: {str(e)}")
+
 
 # 示例查询
 domain = "image-search-engine-minio"
