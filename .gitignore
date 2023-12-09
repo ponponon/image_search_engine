@@ -178,5 +178,5 @@ Pipfile.lock
 *.zip
 *.ts
 *.npz
-*.html
+# *.html
 volumes/
