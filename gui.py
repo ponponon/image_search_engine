@@ -57,8 +57,8 @@ def _status():
 
 # NOTE: do not reload on fly.io (see https://github.com/zauberzeug/nicegui/discussions/1720#discussioncomment-7288741)
 ui.run(
-    # uvicorn_reload_includes='*.py, *.css, *.html',
-    uvicorn_reload_excludes='./deploy/*,',
+    uvicorn_reload_includes='*.py, *.css, *.html,*.svg',
+    # uvicorn_reload_excludes='./deploy/*,',
     reload=not on_fly,
     reconnect_timeout=10.0
 )
