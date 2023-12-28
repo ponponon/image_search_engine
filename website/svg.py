@@ -13,7 +13,7 @@ def face(half: bool = False) -> ui.html:
 
 
 def word() -> ui.html:
-    return ui.html((PATH / 'nicegui_word.svg').read_text())
+    return ui.html((PATH / 'ImageSearchLogo.svg').read_text())
 
 
 def github() -> ui.html:
@@ -26,3 +26,6 @@ def discord() -> ui.html:
 
 def reddit() -> ui.html:
     return ui.html((PATH / 'reddit.svg').read_text())
+
+def image() -> ui.html:
+    return ui.html((PATH / 'image.svg').read_text())
